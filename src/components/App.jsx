@@ -1,62 +1,58 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { Statistics, FeedbackOptions, Section } from '../components';
 
-class App extends Component {
-  state = {
+const App = () => {
+  const [form, setForm] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-  };
+  });
 
-  onLeaveFeedback = e => {
+  const onLeaveFeedback = e => {
     const { name } = e.target;
-    this.setState(prevState => ({ [name]: prevState[name] + 1 }));
+    setForm(prevForm => ({ ...prevForm, [name]: prevForm[name] + 1 }));
   };
 
-  countTotalFeedback() {
-    return this.state.good + this.state.neutral + this.state.bad;
-  }
+  const countTotalFeedback = () => {
+    return form.good + form.neutral + form.bad;
+  };
 
-  countPositiveFeedbackPercentage(sum) {
-    return (Math.round((this.state.good / sum) * 100) || 0) + '%';
-  }
+  const countPositiveFeedbackPercentage = sum => {
+    return (Math.round((form.good / sum) * 100) || 0) + '%';
+  };
 
-  render() {
-    const sum = this.countTotalFeedback();
-    const persentGood = this.countPositiveFeedbackPercentage(sum);
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={this.state}
-            onLeaveFeedback={this.onLeaveFeedback}
+  const sum = countTotalFeedback();
+  const persentGood = countPositiveFeedbackPercentage(sum);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 40,
+        color: '#010101',
+      }}
+    >
+      <Section title="Please leave feedback">
+        <FeedbackOptions options={form} onLeaveFeedback={onLeaveFeedback} />
+      </Section>
+      <Section title="Statistics">
+        {sum === 0 ? (
+          <p>There is no feedback</p>
+        ) : (
+          <Statistics
+            Good={form.good}
+            Neutral={form.neutral}
+            Bad={form.bad}
+            Total={sum}
+            PositiveFeadback={persentGood}
           />
-        </Section>
-        <Section title="Statistics">
-          {sum === 0 ? (
-            <p>There is no feedback</p>
-          ) : (
-            <Statistics
-              Good={this.state.good}
-              Neutral={this.state.neutral}
-              Bad={this.state.bad}
-              Total={sum}
-              PositiveFeadback={persentGood}
-            />
-          )}
-        </Section>
-      </div>
-    );
-  }
-}
+        )}
+      </Section>
+    </div>
+  );
+};
 
 export default App;
